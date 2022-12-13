@@ -12,7 +12,7 @@ export class CursosComponent {
 
   constructor(){
     this.listaCursos=['Test Unitarios', 'WebFlux', 'Redux', 'Automatización Azure'];
-    this.habilitar=true;
+    this.habilitar=false;
   }
 
 
