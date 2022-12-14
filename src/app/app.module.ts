@@ -1,6 +1,8 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
+import { RouterModule, Routes } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 
 //componentes
 import { AppComponent } from './app.component';
@@ -14,6 +16,17 @@ import { ContadorNietoComponent } from './componentes/contador-nieto/contador-ni
 
 //servicios
 import { ClienteService } from './servicios/cliente.service';
+import { FormComponent } from './formularios/clientes/form/form.component';
+
+const routes:Routes=[
+  {path: '', redirectTo:'/home', pathMatch:'full'},
+  {path: 'home', component:ContadorPadreComponent},
+  {path: 'cursos', component:CursosComponent},
+  {path: 'clientes', component:ClientesComponent},
+  {path: 'clientes/form', component:FormComponent},
+  {path: 'clientes/form/:id', component:FormComponent}
+]
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -23,11 +36,14 @@ import { ClienteService } from './servicios/cliente.service';
     ClientesComponent,
     ContadorPadreComponent,
     ContadorHijoComponent,
-    ContadorNietoComponent
+    ContadorNietoComponent,
+    FormComponent
   ],
   imports: [
     BrowserModule,
-    HttpClientModule
+    HttpClientModule,
+    RouterModule.forRoot(routes),
+    FormsModule
   ],
   providers: [ClienteService],
   bootstrap: [AppComponent]

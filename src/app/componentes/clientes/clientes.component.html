@@ -1,34 +1,60 @@
-<button type="button" (click)="setHabilitar()" class="btn btn-primary my-3"> {{ habilitar == true ? 'Ocultar': 'Mostrar' }}</button>
-<div *ngIf="habilitar">
-    <div class="card" *ngIf="listclientes.length>0">
-        <div class="card-header">Listado de clientes</div>
-        <div class="card-body">
-          <thead>
-              <tr>
-                  <th>Id</th>
-                  <th>Nombre</th>
-                  <th>Apellido</th>
-                  <th>Email</th>
-                  <th>Fecha</th>
-                  <th>Editar</th>
-                  <th>Eliminar</th>
-              </tr>
-          </thead>
-          <tbody>
-              <tr *ngFor="let cliente of listclientes">
-                  <td>{{cliente.id}}</td>
-                  <td>{{cliente.nombre}}</td>
-                  <td>{{cliente.apellido}}</td>
-                  <td>{{cliente.email}}</td>
-                  <td>{{cliente.createAt}}</td>
-                  <td>Editar</td>
-                  <td>Eliminar</td>
-              </tr>
-          </tbody>
-        </div>
-      </div>
-      
-      <div *ngIf="listclientes.length==0">
-          No hay clientes disponibles
-      </div>
+<div class="container">
+  <div class="card text-bg-light mb-3" *ngIf="listclientes.length > 0">
+    <div class="card-header">Listado de clientes</div>
+    <div class="my-2 text-letf">
+      <button
+        type="button"
+        nombre="button"
+        class="btn btn-primary"
+        routerLink="/clientes/form"
+      >
+        Añadir cliente
+      </button>
+    </div>
+    <div class="card-body">
+      <table class="table table-bordered table-striped">
+        <thead>
+          <tr>
+            <th>Id</th>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Email</th>
+            <th>Fecha</th>
+            <th>Editar</th>
+            <th>Eliminar</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let cliente of listclientes">
+            <td>{{ cliente.id }}</td>
+            <td>{{ cliente.nombre }}</td>
+            <td>{{ cliente.apellido }}</td>
+            <td>{{ cliente.email }}</td>
+            <td>{{ cliente.createAt }}</td>
+            <td>
+              <button
+                type="button"
+                nombre="button"
+                class="btn btn-primary"
+                [routerLink]="['/clientes/form', cliente.id]"
+              >
+                Editar
+              </button>
+            </td>
+            <td>
+              <button
+                type="button"
+                nombre="button"
+                class="btn btn-danger"
+                (click)="delete(cliente)"
+              >
+                Eliminar
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div *ngIf="listclientes.length == 0">No hay clientes disponibles</div>
 </div>

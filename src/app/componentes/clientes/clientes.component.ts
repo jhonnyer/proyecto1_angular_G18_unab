@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Cliente } from 'src/app/models/cliente';
 import { ClienteService } from 'src/app/servicios/cliente.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-clientes',
@@ -11,7 +12,6 @@ export class ClientesComponent implements OnInit{
 
     cliente1:Cliente;
     cliente2:Cliente;
-    habilitar:boolean;
 
     listclientes:Cliente[];
 
@@ -33,7 +33,6 @@ export class ClientesComponent implements OnInit{
       //   {id:10, nombre:'Jose',apellido:'Galindez',email:'fernando@gmail.com',createAt:'2022-12-09',foto:''},
       // ],
 
-      this.habilitar=false;
     }
   ngOnInit() {
     this.clienteService.getClientes().subscribe((clientes)=>{
@@ -45,9 +44,46 @@ export class ClientesComponent implements OnInit{
     )
   }
 
+  delete(cliente:Cliente){
+    const swalWithBootstrapButtons = Swal.mixin({
+      customClass: {
+        confirmButton: 'btn btn-success',
+        cancelButton: 'btn btn-danger'
+      },
+      buttonsStyling: false
+    })
+    
+    swalWithBootstrapButtons.fire({
+      title: 'Estás seguro ?',
+      text: "Tu no quieres revertir esto!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Si Eliminar esto!',
+      cancelButtonText: 'No, cancelar!',
+      reverseButtons: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.clienteService.delete(cliente.id).subscribe(
+          response=>{
+            this.listclientes=this.listclientes.filter(cli => cli!=cliente)
+            swalWithBootstrapButtons.fire(
+              'Eliminado!',
+              'El registro de '+cliente.nombre+' ha sido eliminado',
+              'success'
+            )
+          }
+        )
+      } else if (
+        /* Read more about handling dismissals below */
+        result.dismiss === Swal.DismissReason.cancel
+      ) {
+        swalWithBootstrapButtons.fire(
+          'Cancelado',
+          'Registro no eliminado',
+          'error'
+        )
+      }
+    })
+  }
 
-    setHabilitar():void{
-      this.habilitar= (this.habilitar==true) ? false : true;
-  
-    }
 }

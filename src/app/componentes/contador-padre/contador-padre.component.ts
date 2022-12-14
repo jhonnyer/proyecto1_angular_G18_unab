@@ -8,8 +8,15 @@ import { Component } from '@angular/core';
 export class ContadorPadreComponent {
   contador:number;
 
+  title:string;
+  curso:string;
+  num_estudiantes:number;
+
   constructor(){
     this.contador=10;
+    this.title='Proyecto 1 Grupo G18';
+    this.curso="Programación web";
+    this.num_estudiantes=30;
   }
 
   incrementar(){
