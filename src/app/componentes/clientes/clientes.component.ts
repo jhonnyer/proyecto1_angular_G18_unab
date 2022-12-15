@@ -1,89 +1,123 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { MatTableDataSource } from '@angular/material/table';
 import { Cliente } from 'src/app/models/cliente';
 import { ClienteService } from 'src/app/servicios/cliente.service';
 import Swal from 'sweetalert2';
+import { MatPaginator } from '@angular/material/paginator';
 
 @Component({
   selector: 'app-clientes',
   templateUrl: './clientes.component.html',
-  styleUrls: ['./clientes.component.css']
+  styleUrls: ['./clientes.component.css'],
 })
-export class ClientesComponent implements OnInit{
+export class ClientesComponent implements OnInit, AfterViewInit {
+  cliente1: Cliente;
+  cliente2: Cliente;
+  listclientes: Cliente[];
 
-    cliente1:Cliente;
-    cliente2:Cliente;
+  //Table Angular Material
+  displayedColumns: string[];
+  dataSource: MatTableDataSource<Cliente>;
 
-    listclientes:Cliente[];
+  constructor(private clienteService: ClienteService) {
+    this.cliente1 = new Cliente(
+      1,
+      'Jhonnyer',
+      'Galindez',
+      'jhonnyerg@gmail.com',
+      '2022-12-09',
+      ''
+    );
+    this.cliente2 = {
+      id: 2,
+      nombre: 'Fernando',
+      apellido: 'Galindez',
+      email: 'fernando@gmail.com',
+      createAt: '2022-12-09',
+      foto: '',
+    };
+    this.listclientes = [];
 
-    constructor(private clienteService:ClienteService){
-      this.cliente1=new Cliente(1, 'Jhonnyer', 'Galindez', 'jhonnyerg@gmail.com','2022-12-09','');
-      this.cliente2={id:2, nombre:'Fernando',apellido:'Galindez',email:'fernando@gmail.com',createAt:'2022-12-09',foto:''};
+    //Table Angular Material
+    this.displayedColumns = [
+      'id',
+      'nombre',
+      'apellido',
+      'email',
+      'fecha',
+      'acciones'
+    ];
 
-      this.listclientes=[];
-      // this.listclientes=[
-      //   {id:1, nombre:'Fernando',apellido:'Galindez',email:'fernando@gmail.com',createAt:'2022-12-09',foto:''},
-      //   {id:2, nombre:'Luis',apellido:'Galindez',email:'fernando@gmail.com',createAt:'2022-12-09',foto:''},
-      //   {id:3, nombre:'Angelica',apellido:'Galindez',email:'fernando@gmail.com',createAt:'2022-12-09',foto:''},
-      //   {id:4, nombre:'Ana',apellido:'Galindez',email:'fernando@gmail.com',createAt:'2022-12-09',foto:''},
-      //   {id:5, nombre:'Martha',apellido:'Galindez',email:'fernando@gmail.com',createAt:'2022-12-09',foto:''},
-      //   {id:6, nombre:'Daniel',apellido:'Galindez',email:'fernando@gmail.com',createAt:'2022-12-09',foto:''},
-      //   {id:7, nombre:'Jesus',apellido:'Galindez',email:'fernando@gmail.com',createAt:'2022-12-09',foto:''},
-      //   {id:8, nombre:'Laura',apellido:'Galindez',email:'fernando@gmail.com',createAt:'2022-12-09',foto:''},
-      //   {id:9, nombre:'Luisa',apellido:'Galindez',email:'fernando@gmail.com',createAt:'2022-12-09',foto:''},
-      //   {id:10, nombre:'Jose',apellido:'Galindez',email:'fernando@gmail.com',createAt:'2022-12-09',foto:''},
-      // ],
-
-    }
-  ngOnInit() {
-    this.clienteService.getClientes().subscribe((clientes)=>{
-      this.listclientes=clientes;
-      console.log(this.listclientes);
-    },err=>{
-      console.log("Error: "+err);
-    }
-    )
+    this.dataSource = new MatTableDataSource<Cliente>([]);
   }
 
-  delete(cliente:Cliente){
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+
+  ngAfterViewInit() {
+    this.dataSource.paginator = this.paginator;
+  }
+
+  ngOnInit() {
+    this.clienteService.getClientes().subscribe(
+      (clientes) => {
+        this.listclientes = clientes;
+        if (this.listclientes.length > 0) {
+          this.dataSource.data = this.listclientes;
+        }
+      },
+      (err) => {
+        console.log('Error: ' + err);
+      }
+    );
+  }
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
+
+  delete(cliente: Cliente) {
     const swalWithBootstrapButtons = Swal.mixin({
       customClass: {
         confirmButton: 'btn btn-success',
-        cancelButton: 'btn btn-danger'
+        cancelButton: 'btn btn-danger',
       },
-      buttonsStyling: false
-    })
-    
-    swalWithBootstrapButtons.fire({
-      title: 'Estás seguro ?',
-      text: "Tu no quieres revertir esto!",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Si Eliminar esto!',
-      cancelButtonText: 'No, cancelar!',
-      reverseButtons: true
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.clienteService.delete(cliente.id).subscribe(
-          response=>{
-            this.listclientes=this.listclientes.filter(cli => cli!=cliente)
+      buttonsStyling: false,
+    });
+
+    swalWithBootstrapButtons
+      .fire({
+        title: 'Estás seguro ?',
+        text: 'Tu no quieres revertir esto!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Si Eliminar esto!',
+        cancelButtonText: 'No, cancelar!',
+        reverseButtons: true,
+      })
+      .then((result) => {
+        if (result.isConfirmed) {
+          this.clienteService.delete(cliente.id).subscribe((response) => {
+            this.listclientes = this.listclientes.filter(
+              (cli) => cli != cliente
+            );
+            this.dataSource.data=this.listclientes;
             swalWithBootstrapButtons.fire(
               'Eliminado!',
-              'El registro de '+cliente.nombre+' ha sido eliminado',
+              'El registro de ' + cliente.nombre + ' ha sido eliminado',
               'success'
-            )
-          }
-        )
-      } else if (
-        /* Read more about handling dismissals below */
-        result.dismiss === Swal.DismissReason.cancel
-      ) {
-        swalWithBootstrapButtons.fire(
-          'Cancelado',
-          'Registro no eliminado',
-          'error'
-        )
-      }
-    })
+            );
+          });
+        } else if (
+          /* Read more about handling dismissals below */
+          result.dismiss === Swal.DismissReason.cancel
+        ) {
+          swalWithBootstrapButtons.fire(
+            'Cancelado',
+            'Registro no eliminado',
+            'error'
+          );
+        }
+      });
   }
-
 }

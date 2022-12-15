@@ -1,8 +1,9 @@
-import { NgModule } from '@angular/core';
+import { LOCALE_ID, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
 import { RouterModule, Routes } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import localEs from '@angular/common/locales/es';
 
 //componentes
 import { AppComponent } from './app.component';
@@ -17,6 +18,15 @@ import { ContadorNietoComponent } from './componentes/contador-nieto/contador-ni
 //servicios
 import { ClienteService } from './servicios/cliente.service';
 import { FormComponent } from './formularios/clientes/form/form.component';
+import { registerLocaleData } from '@angular/common';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
+//AngularMaterial
+import {MatTableModule} from '@angular/material/table';
+import {MatPaginatorModule} from '@angular/material/paginator';
+import {MatInputModule} from '@angular/material/input';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatIconModule} from '@angular/material/icon';
 
 const routes:Routes=[
   {path: '', redirectTo:'/home', pathMatch:'full'},
@@ -27,6 +37,7 @@ const routes:Routes=[
   {path: 'clientes/form/:id', component:FormComponent}
 ]
 
+registerLocaleData(localEs,'es');
 @NgModule({
   declarations: [
     AppComponent,
@@ -43,9 +54,18 @@ const routes:Routes=[
     BrowserModule,
     HttpClientModule,
     RouterModule.forRoot(routes),
-    FormsModule
+    FormsModule,
+    BrowserAnimationsModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatIconModule
   ],
-  providers: [ClienteService],
+  providers: [
+    ClienteService,
+    {provide:LOCALE_ID, useValue:'es'}
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -1,8 +1,11 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, catchError, throwError, map, tap } from 'rxjs';
+import Swal from 'sweetalert2';
 import { Cliente } from '../models/cliente';
 import { ResponseCliente } from '../models/ResponseCliente';
+import { Router } from '@angular/router';
+import { formatDate } from '@angular/common';
 
 
 @Injectable({
@@ -13,7 +16,7 @@ export class ClienteService {
   private UrlClient:string;
   httpHeader:HttpHeaders
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private router:Router) {
     this.UrlClient="http://localhost:8080/cliente/";
     this.httpHeader=new HttpHeaders({'Content-Type':'application/json'});
    }
@@ -23,15 +26,57 @@ export class ClienteService {
    }
 
    getClientes():Observable<Cliente[]>{
-    return this.http.get<Cliente[]>(this.UrlClient+"listar");
+    return this.http.get<Cliente[]>(this.UrlClient+"listar").pipe(
+      tap(response=>{
+         console.log("TAB 1");
+         let clientes=response as Cliente[];
+         clientes.forEach(t=>{
+            console.log(t);
+         })
+      }),
+      map(response=>{
+         let clientes=response as Cliente[];
+         return clientes.map(
+            cliente=>{
+               cliente.nombre=cliente.nombre.toLowerCase();
+               // cliente.createAt=formatDate(cliente.createAt,'dd/MM/yy','en-US');
+               cliente.createAt=formatDate(cliente.createAt,'fullDate','es');
+               return cliente;
+            }
+         );
+      }),
+      tap(response=>{
+         console.log("TAB 2");
+         response.forEach(t=>{
+            console.log(t);
+         })
+      })
+    );
    }
 
    createCliente(cliente:Cliente):Observable<ResponseCliente>{
-      return this.http.post<ResponseCliente>(this.UrlClient+"save", cliente, {headers:this.httpHeader});
+      return this.http.post<ResponseCliente>(this.UrlClient+"save", cliente, {headers:this.httpHeader}).pipe(
+         catchError(e=>{
+            console.log(e);
+            this.router.navigate(['/clientes']);
+            Swal.fire("Error al crear un cliente",""+e.error.mensaje,'error');
+            return throwError(e);
+         })
+      );
    }
 
    updateCliente(cliente:Cliente):Observable<ResponseCliente>{
-      return this.http.put<ResponseCliente>(`${this.UrlClient+"save"}/${cliente.id}`, cliente, {headers:this.httpHeader});
+      return this.http.put<ResponseCliente>(`${this.UrlClient+"save"}/${cliente.id}`, cliente, {headers:this.httpHeader}).pipe(
+         catchError(e=>{
+            console.log(e);
+            let error=e as ResponseCliente;
+            console.log("ERROR UPDATE");
+            console.log(error);
+            this.router.navigate(['/clientes']);
+            Swal.fire("Error al editar un cliente",""+e.error.errors,'error');
+            return throwError(e);
+         })
+      );;
    }
 
    delete(id:number):Observable<ResponseCliente>{
