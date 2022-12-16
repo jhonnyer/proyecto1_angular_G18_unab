@@ -21,4 +21,20 @@
     [contador]="contador"
     (cambioContador)="contador = $event"
   ></app-contador-hijo>
+
+  <hr>
+
+  <app-search-producto (search)="handleSearch($event)"></app-search-producto>
+  <div *ngIf="productos.length>0">
+    <ul class="list-group" *ngFor="let producto of productos; let indice=index">
+      <li class="list-group-item"> {{ producto.id }}</li>
+      <li class="list-group-item"> {{ producto.nombre }}</li>
+      <li class="list-group-item"> {{ producto.precio }}</li>
+      <li class="list-group-item"> {{ producto.createAt }}</li>
+      <li class="list-group-item"> {{ indice }}</li>
+    </ul>
+  </div>
+  <div *ngIf="productos.length==0">
+    <p><span>No hay productos disponibles</span></p>
+  </div>
 </div>

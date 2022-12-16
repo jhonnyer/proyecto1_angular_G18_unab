@@ -7,10 +7,17 @@
     <div class="card-header">Listado de cursos</div>
     <div class="card-body">
       <ul class="list-group">
-        <li class="list-group-item" *ngFor="let curso of listaCursos">
+        <li class="list-group-item" *ngFor="let curso of listaCursos, let indice=index">
           Curso: {{ curso }}
+          <button (click)="borrarCurso(indice)">Eliminar</button>
         </li>
       </ul>
+    </div>
+    <div>
+        <p>Añadir un item a la lista</p>
+        <input type="text" [(ngModel)]="textForm" (keyup)="mostrarTexto()">
+        <button (click)="getTexto()">Mostrar Cursos</button>
+        <button (click)="addTexto()">Añadir Cursos</button>
     </div>
   </div>
 

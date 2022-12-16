@@ -2,7 +2,7 @@ import { LOCALE_ID, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
 import { RouterModule, Routes } from '@angular/router';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import localEs from '@angular/common/locales/es';
 
 //componentes
@@ -27,9 +27,13 @@ import {MatPaginatorModule} from '@angular/material/paginator';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatIconModule} from '@angular/material/icon';
+import { SearchProductoComponent } from './componentes/search-producto/search-producto.component';
+import { LoginComponent } from './componentes/login/login/login.component';
+import {MatButtonModule} from '@angular/material/button';
 
 const routes:Routes=[
   {path: '', redirectTo:'/home', pathMatch:'full'},
+  {path: 'login', component:LoginComponent},
   {path: 'home', component:ContadorPadreComponent},
   {path: 'cursos', component:CursosComponent},
   {path: 'clientes', component:ClientesComponent},
@@ -48,7 +52,9 @@ registerLocaleData(localEs,'es');
     ContadorPadreComponent,
     ContadorHijoComponent,
     ContadorNietoComponent,
-    FormComponent
+    FormComponent,
+    SearchProductoComponent,
+    LoginComponent
   ],
   imports: [
     BrowserModule,
@@ -60,7 +66,9 @@ registerLocaleData(localEs,'es');
     MatPaginatorModule,
     MatInputModule,
     MatFormFieldModule,
-    MatIconModule
+    MatIconModule,
+    ReactiveFormsModule,
+    MatButtonModule
   ],
   providers: [
     ClienteService,
