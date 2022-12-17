@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-navbar',
@@ -8,7 +9,13 @@ import { Component } from '@angular/core';
 export class NavbarComponent {
   title:string;
 
-  constructor(){
+  constructor(private router:Router){
     this.title="App G18";
+  }
+
+  logout(){
+    sessionStorage.clear();
+    sessionStorage.setItem('authenticated',"false");
+    this.router.navigate(['/login']);
   }
 }

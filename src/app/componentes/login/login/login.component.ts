@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ILogin } from 'src/app/models/ILogin';
@@ -14,7 +14,6 @@ export class LoginComponent {
   formLogin: FormGroup;
   usuario: ILogin;
   responseLogin!: IResponseLogin;
-  @Output('authenticated') isAuhenticated = new EventEmitter<boolean>();
   authenticated: boolean;
 
   constructor(
@@ -37,21 +36,15 @@ export class LoginComponent {
     };
     console.log(this.usuario);
     this.loginService.postLogin(this.usuario).subscribe((response) => {
-      if (response.status > 400) {
-        console.log("RESPONSE ");
-        this.authenticated = false;
-        this.isAuhenticated.emit(this.authenticated);
-        this.formLogin.reset();
-        this.router.navigate(['/login']);
-      } else {
-        this.responseLogin = response;
-        console.log(this.responseLogin);
-        sessionStorage.setItem('token', this.responseLogin.token);
-        sessionStorage.setItem('roles', response.roles);
-        this.authenticated = true;
-        this.isAuhenticated.emit(this.authenticated);
-        this.router.navigate(['/home']);
-      }
+      this.responseLogin = response;
+      sessionStorage.setItem('token', this.responseLogin.token);
+      sessionStorage.setItem('roles', response.roles);
+      this.authenticated=true;
+      sessionStorage.setItem('authenticated',this.authenticated.toString())
+      this.router.navigate(['/home']);
+    },err=>{
+      this.formLogin.reset();
+      sessionStorage.setItem('authenticated',this.authenticated.toString())
     });
   }
 }

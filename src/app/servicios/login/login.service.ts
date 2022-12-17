@@ -24,7 +24,6 @@ export class LoginService {
         return throwError(e);
       })
     );
-
   }
 
 }

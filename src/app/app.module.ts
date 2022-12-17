@@ -30,15 +30,20 @@ import {MatIconModule} from '@angular/material/icon';
 import { SearchProductoComponent } from './componentes/search-producto/search-producto.component';
 import { LoginComponent } from './componentes/login/login/login.component';
 import {MatButtonModule} from '@angular/material/button';
+import {MatSelectModule} from '@angular/material/select';
+
+//Guardas
+import { LoginGuard } from './guardas/login.guard';
+import { HashRolesGuard } from './guardas/hash-roles.guard';
 
 const routes:Routes=[
   {path: '', redirectTo:'/home', pathMatch:'full'},
   {path: 'login', component:LoginComponent},
   {path: 'home', component:ContadorPadreComponent},
-  {path: 'cursos', component:CursosComponent},
-  {path: 'clientes', component:ClientesComponent},
-  {path: 'clientes/form', component:FormComponent},
-  {path: 'clientes/form/:id', component:FormComponent}
+  {path: 'cursos', component:CursosComponent, canActivate:[LoginGuard, HashRolesGuard], data:{role:'ROLE_ADMIN'}},
+  {path: 'clientes', component:ClientesComponent, canActivate:[LoginGuard,HashRolesGuard], data:{role:'ROLE_ADMIN'}},
+  {path: 'clientes/form', component:FormComponent, canActivate:[LoginGuard, HashRolesGuard], data:{role:'ROLE_ADMIN'}},
+  {path: 'clientes/form/:id', component:FormComponent, canActivate:[LoginGuard, HashRolesGuard], data:{role:'ROLE_ADMIN'}}
 ]
 
 registerLocaleData(localEs,'es');
@@ -68,11 +73,14 @@ registerLocaleData(localEs,'es');
     MatFormFieldModule,
     MatIconModule,
     ReactiveFormsModule,
-    MatButtonModule
+    MatButtonModule,
+    MatSelectModule
   ],
   providers: [
     ClienteService,
-    {provide:LOCALE_ID, useValue:'es'}
+    {provide:LOCALE_ID, useValue:'es'},
+    LoginGuard,
+    HashRolesGuard
   ],
   bootstrap: [AppComponent]
 })

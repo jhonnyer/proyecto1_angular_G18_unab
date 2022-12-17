@@ -1,9 +1,10 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, Input, OnInit, ViewChild } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { Cliente } from 'src/app/models/cliente';
 import { ClienteService } from 'src/app/servicios/cliente.service';
 import Swal from 'sweetalert2';
 import { MatPaginator } from '@angular/material/paginator';
+import { HttpHeaders } from '@angular/common/http';
 
 @Component({
   selector: 'app-clientes',
@@ -18,6 +19,10 @@ export class ClientesComponent implements OnInit, AfterViewInit {
   //Table Angular Material
   displayedColumns: string[];
   dataSource: MatTableDataSource<Cliente>;
+
+  httpHeaders:HttpHeaders=new HttpHeaders();
+  token=sessionStorage.getItem('token');
+
 
   constructor(private clienteService: ClienteService) {
     this.cliente1 = new Cliente(
@@ -49,6 +54,8 @@ export class ClientesComponent implements OnInit, AfterViewInit {
     ];
 
     this.dataSource = new MatTableDataSource<Cliente>([]);
+
+    this.httpHeaders=this.httpHeaders.append('Authorization','Bearer '+this.token);
   }
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -58,15 +65,12 @@ export class ClientesComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
-    this.clienteService.getClientes().subscribe(
+    this.clienteService.getClientes(this.httpHeaders).subscribe(
       (clientes) => {
         this.listclientes = clientes;
         if (this.listclientes.length > 0) {
           this.dataSource.data = this.listclientes;
         }
-      },
-      (err) => {
-        console.log('Error: ' + err);
       }
     );
   }
@@ -96,27 +100,16 @@ export class ClientesComponent implements OnInit, AfterViewInit {
         reverseButtons: true,
       })
       .then((result) => {
-        if (result.isConfirmed) {
-          this.clienteService.delete(cliente.id).subscribe((response) => {
-            this.listclientes = this.listclientes.filter(
-              (cli) => cli != cliente
-            );
-            this.dataSource.data=this.listclientes;
-            swalWithBootstrapButtons.fire(
-              'Eliminado!',
-              'El registro de ' + cliente.nombre + ' ha sido eliminado',
+        if (result.value) {
+          this.clienteService.delete(cliente.id, this.httpHeaders).subscribe((response) => {
+            this.listclientes = this.listclientes.filter((cli) => cli !== cliente); //quitar del listado clientes, el objeto que se elimino para que se actualice de forma automatica.
+            this.dataSource.data = this.listclientes;
+            Swal.fire(
+              'Cliente Eliminado!',
+              `Cliente ${cliente.nombre} eliminado con éxito`,
               'success'
             );
           });
-        } else if (
-          /* Read more about handling dismissals below */
-          result.dismiss === Swal.DismissReason.cancel
-        ) {
-          swalWithBootstrapButtons.fire(
-            'Cancelado',
-            'Registro no eliminado',
-            'error'
-          );
         }
       });
   }

@@ -21,17 +21,17 @@ export class ClienteService {
     this.httpHeader=new HttpHeaders({'Content-Type':'application/json'});
    }
 
-   getCliente(id:string):Observable<Cliente>{
-    return this.http.get<Cliente>(`${this.UrlClient+"findOne"}/${id}`);
+   getCliente(id:string, httpHeader:HttpHeaders):Observable<Cliente>{
+    return this.http.get<Cliente>(`${this.UrlClient+"findOne"}/${id}`, {headers:httpHeader});
    }
 
-   getClientes():Observable<Cliente[]>{
-    return this.http.get<Cliente[]>(this.UrlClient+"listar").pipe(
+   getClientes(httpHeader:HttpHeaders):Observable<Cliente[]>{
+    return this.http.get<Cliente[]>(this.UrlClient+"listar",{headers:httpHeader}).pipe(
       tap(response=>{
          console.log("TAB 1");
          let clientes=response as Cliente[];
          clientes.forEach(t=>{
-            console.log(t);
+            // console.log(t);
          })
       }),
       map(response=>{
@@ -48,14 +48,14 @@ export class ClienteService {
       tap(response=>{
          console.log("TAB 2");
          response.forEach(t=>{
-            console.log(t);
+            // console.log(t);
          })
       })
     );
    }
 
-   createCliente(cliente:Cliente):Observable<ResponseCliente>{
-      return this.http.post<ResponseCliente>(this.UrlClient+"save", cliente, {headers:this.httpHeader}).pipe(
+   createCliente(cliente:Cliente,httpHeader:HttpHeaders):Observable<ResponseCliente>{
+      return this.http.post<ResponseCliente>(this.UrlClient+"save", cliente, {headers:httpHeader}).pipe(
          catchError(e=>{
             console.log(e);
             this.router.navigate(['/clientes']);
@@ -65,8 +65,8 @@ export class ClienteService {
       );
    }
 
-   updateCliente(cliente:Cliente):Observable<ResponseCliente>{
-      return this.http.put<ResponseCliente>(`${this.UrlClient+"save"}/${cliente.id}`, cliente, {headers:this.httpHeader}).pipe(
+   updateCliente(cliente:Cliente,httpHeader:HttpHeaders):Observable<ResponseCliente>{
+      return this.http.put<ResponseCliente>(`${this.UrlClient+"save"}/${cliente.id}`, cliente, {headers:httpHeader}).pipe(
          catchError(e=>{
             console.log(e);
             let error=e as ResponseCliente;
@@ -79,7 +79,7 @@ export class ClienteService {
       );;
    }
 
-   delete(id:number):Observable<ResponseCliente>{
-      return this.http.delete<ResponseCliente>(`${this.UrlClient+"delete"}/${id}`, {headers:this.httpHeader});
+   delete(id:number,httpHeader:HttpHeaders):Observable<ResponseCliente>{
+      return this.http.delete<ResponseCliente>(`${this.UrlClient+"delete"}/${id}`, {headers:httpHeader});
    }
 }
