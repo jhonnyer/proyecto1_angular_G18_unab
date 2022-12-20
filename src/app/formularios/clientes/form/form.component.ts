@@ -32,7 +32,7 @@ export class FormComponent implements OnInit{
       response => {
         this.respondeCliente=response
         console.log(this.respondeCliente);
-        this.router.navigate(['/clientes']);
+        this.router.navigate(['/administrador/home/clientes']);
         Swal.fire("Nuevo Cliente", response.mensaje, 'success')
       }
     )
@@ -43,7 +43,7 @@ export class FormComponent implements OnInit{
       response => {
         this.respondeCliente=response
         console.log(this.respondeCliente);
-        this.router.navigate(['/clientes']);
+        this.router.navigate(['/administrador/home/clientes']);
         Swal.fire("Cliente Actualizado", response.mensaje, 'success')
       }
     )

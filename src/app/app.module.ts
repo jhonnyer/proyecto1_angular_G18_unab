@@ -7,13 +7,12 @@ import localEs from '@angular/common/locales/es';
 
 //componentes
 import { AppComponent } from './app.component';
-import { NavbarComponent } from './componentes/navbar/navbar.component';
-import { FooterComponent } from './componentes/footer/footer.component';
 import { CursosComponent } from './componentes/cursos/cursos.component';
 import { ClientesComponent } from './componentes/clientes/clientes.component';
 import { ContadorPadreComponent } from './componentes/contador-padre/contador-padre.component';
 import { ContadorHijoComponent } from './componentes/contador-hijo/contador-hijo.component';
 import { ContadorNietoComponent } from './componentes/contador-nieto/contador-nieto.component';
+
 
 //servicios
 import { ClienteService } from './servicios/cliente.service';
@@ -35,23 +34,31 @@ import {MatSelectModule} from '@angular/material/select';
 //Guardas
 import { LoginGuard } from './guardas/login.guard';
 import { HashRolesGuard } from './guardas/hash-roles.guard';
+import { FooterComponent } from './componentes/footer/footer.component';
 
 const routes:Routes=[
   {path: '', redirectTo:'/home', pathMatch:'full'},
   {path: 'login', component:LoginComponent},
-  {path: 'home', component:ContadorPadreComponent},
-  {path: 'cursos', component:CursosComponent, canActivate:[LoginGuard, HashRolesGuard], data:{role:'ROLE_ADMIN'}},
-  {path: 'clientes', component:ClientesComponent, canActivate:[LoginGuard,HashRolesGuard], data:{role:'ROLE_ADMIN'}},
-  {path: 'clientes/form', component:FormComponent, canActivate:[LoginGuard, HashRolesGuard], data:{role:'ROLE_ADMIN'}},
-  {path: 'clientes/form/:id', component:FormComponent, canActivate:[LoginGuard, HashRolesGuard], data:{role:'ROLE_ADMIN'}}
+
+  {path: 'administrador', loadChildren: () =>
+    import('../app/modulos/administrador/administrador/administrador.module')
+    .then(x=> x.AdministradorModule),
+    canActivate:[LoginGuard, HashRolesGuard], data:{role:'ROLE_ADMIN'}
+  },
+
+  {path: 'visitante', loadChildren: () =>
+    import('../app/modulos/visitante/visitante/visitante.module')
+    .then(x=> x.VisitanteModule),
+    canActivate:[LoginGuard, HashRolesGuard], data:{role:'ROLE_USER'}
+  },
+  
+  {path:'**', component:LoginComponent}
 ]
 
 registerLocaleData(localEs,'es');
 @NgModule({
   declarations: [
     AppComponent,
-    NavbarComponent,
-    FooterComponent,
     CursosComponent,
     ClientesComponent,
     ContadorPadreComponent,
@@ -59,7 +66,8 @@ registerLocaleData(localEs,'es');
     ContadorNietoComponent,
     FormComponent,
     SearchProductoComponent,
-    LoginComponent
+    LoginComponent,
+    FooterComponent
   ],
   imports: [
     BrowserModule,

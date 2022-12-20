@@ -58,7 +58,7 @@ export class ClienteService {
       return this.http.post<ResponseCliente>(this.UrlClient+"save", cliente, {headers:httpHeader}).pipe(
          catchError(e=>{
             console.log(e);
-            this.router.navigate(['/clientes']);
+            this.router.navigate(['/administrador/home/clientes']);
             Swal.fire("Error al crear un cliente",""+e.error.mensaje,'error');
             return throwError(e);
          })
@@ -72,7 +72,7 @@ export class ClienteService {
             let error=e as ResponseCliente;
             console.log("ERROR UPDATE");
             console.log(error);
-            this.router.navigate(['/clientes']);
+            this.router.navigate(['/administrador/home/clientes']);
             Swal.fire("Error al editar un cliente",""+e.error.errors,'error');
             return throwError(e);
          })

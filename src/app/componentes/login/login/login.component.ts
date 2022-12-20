@@ -15,6 +15,7 @@ export class LoginComponent {
   usuario: ILogin;
   responseLogin!: IResponseLogin;
   authenticated: boolean;
+  roles:string[];
 
   constructor(
     private formBuilder: FormBuilder,
@@ -27,6 +28,7 @@ export class LoginComponent {
     });
     this.usuario = { username: '', password: '' };
     this.authenticated = false;
+    this.roles=[];
   }
 
   ingresar() {
@@ -41,7 +43,30 @@ export class LoginComponent {
       sessionStorage.setItem('roles', response.roles);
       this.authenticated=true;
       sessionStorage.setItem('authenticated',this.authenticated.toString())
-      this.router.navigate(['/home']);
+      this.roles=response.roles.sort();
+      
+
+      // this.roles.includes('ROLE_ADMIN');
+
+      // for(var rol of this.roles){
+      //   console.log(rol);
+      // }
+
+      this.roles.forEach(r=>{
+        if(this.roles.includes("ROLE_ADMIN")){
+          this.router.navigate(['/administrador/home/clientes']);
+        }
+        switch (r){
+          case 'ROLE_ADMIN':
+            this.router.navigate(['/administrador/home/clientes']);
+            break;
+          case 'ROLE_USER':
+            this.router.navigate(['/visitante/home/contador']);
+            break;
+          default: 
+            break;
+        }    
+      })
     },err=>{
       this.formLogin.reset();
       sessionStorage.setItem('authenticated',this.authenticated.toString())
